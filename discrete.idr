@@ -10,7 +10,7 @@ isLTorEq (LTESucc p) {a = (S _)} {b = (S _)}
          Left l => Left (cong l)
          Right r => Right (LTESucc r)
 
-isGTorEq : GTE b a -> Either (b = a) (GT b a)
+isGTorEq : GTE a b -> Either (a = b) (GT a b)
 isGTorEq p = case isLTorEq p of
                   Left l => Left (sym l)
                   Right r => Right r
@@ -41,9 +41,9 @@ divsLTE : m `Divides` n -> m `LTE` n
 
 divsTrans : a `Divides` b -> b `Divides` c -> a `Divides` c
 divsTrans {a} {c} (P (k ** pf)) (P (k' ** pf'))
-  = let h = sym (multAssociative k' k a)
-        h' = trans (cong {f = mult k'} pf) pf' in
-        P (k' * k ** trans h h')
+  = let h = cong {f = mult k'} pf
+        h' = trans (sym (multAssociative k' k a)) h in
+        P (k' * k ** trans h' pf')
 
 divsAntiSym : a `Divides` b -> b `Divides` a -> a = b
 
