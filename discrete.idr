@@ -75,37 +75,37 @@ inductionPrinciple {n} {nGTEa} base step with (isGTorEq nGTEa)
 -- Division
 -------------------------------------------------------------------------------
 
-data Divides : Nat -> Nat -> Type where
-  P : (k : Nat ** k * m = n) -> m `Divides` n
+Divides : (m : Nat) -> (n : Nat) -> Type
+Divides m n = (k : Nat ** k * m = n)
 
 divsSym : n `Divides` n
-divsSym {n} = P (1 ** plusZeroRightNeutral n)
+divsSym {n} = (1 ** plusZeroRightNeutral n)
 
 divsZero : m `Divides` Z
-divsZero = P (Z ** Refl) 
+divsZero = (Z ** Refl)
 
 divsLTE : m `Divides` n -> m `LTE` n
 
 divsTrans : a `Divides` b -> b `Divides` c -> a `Divides` c
-divsTrans {a} {c} (P (k ** pf)) (P (k' ** pf'))
+divsTrans {a} {c} (k ** pf) (k' ** pf')
   = let h = cong {f = mult k'} pf
         h' = trans (sym (multAssociative k' k a)) h in
-        P (k' * k ** trans h' pf')
+        (k' * k ** trans h' pf')
 
 divsAntiSym : a `Divides` b -> b `Divides` a -> a = b
 
 divsCombination : a `Divides` b ->
                   a `Divides` c ->
                   a `Divides` (p * b + q * c)
-divsCombination {p} {q} (P (k ** pf)) (P (k' ** pf'))
+divsCombination {p} {q} {a} (k ** pf) (k' ** pf')
   = rewrite sym pf in
     rewrite sym pf' in
     rewrite multAssociative p k a in 
     rewrite multAssociative q k' a in 
     rewrite sym (multDistributesOverPlusLeft (p * k) (q * k') a) in
-            P ((p * k) + (q * k') ** Refl)
+            (p * k + q * k' ** Refl)
 
 divsMultiple : a `Divides` b -> a `Divides` (p * b)
-divsMultiple {p} (P (k ** pf)) = rewrite sym pf in
+divsMultiple {p} {a} (k ** pf) = rewrite sym pf in
                                  rewrite multAssociative p k a in
-                                         P (p * k ** Refl)
+                                         (p * k ** Refl)
