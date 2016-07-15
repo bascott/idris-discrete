@@ -1,6 +1,11 @@
 module Discrete
 
+%access public export
 %default total
+
+-------------------------------------------------------------------------------
+-- Lemmas
+-------------------------------------------------------------------------------
 
 isLTorEq : LTE a b -> Either (a = b) (LT a b)
 isLTorEq LTEZero {a = Z} {b = Z} = Left Refl
@@ -27,12 +32,15 @@ inductionPrinciple {n} {nGTEa} base step with (isGTorEq nGTEa)
   = let ih = inductionPrinciple {p} {n = m} {nGTEa = mGTEa} base step in
         step m mGTEa ih
 
+-------------------------------------------------------------------------------
+-- Division
+-------------------------------------------------------------------------------
+
 data Divides : Nat -> Nat -> Type where
   P : (k : Nat ** k * m = n) -> m `Divides` n
 
 divsSym : n `Divides` n
-divsSym {n} = let divsSymProof = plusZeroRightNeutral n in
-                  P (1 ** divsSymProof)
+divsSym {n} = P (1 ** plusZeroRightNeutral n)
 
 divsZero : m `Divides` Z
 divsZero = P (Z ** Refl) 
