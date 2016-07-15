@@ -84,7 +84,11 @@ divsSym {n} = (1 ** plusZeroRightNeutral n)
 divsZero : m `Divides` Z
 divsZero = (Z ** Refl)
 
-divsLTE : m `Divides` n -> m `LTE` n
+divsLTE : {auto nNotZ : n = S _} -> m `Divides` n -> m `LTE` n
+divsLTE {nNotZ = Refl} {m = Z} {n = S _} (k ** pf) = LTEZero
+divsLTE {nNotZ = Refl} {m = S _} {n = S _} (Z ** pf) = absurd pf
+divsLTE {nNotZ = Refl} {m = S a} {n = S b}  (S j ** pf)
+  = ltePlusRight $ fromEqLTE pf
 
 divsTrans : a `Divides` b -> b `Divides` c -> a `Divides` c
 divsTrans {a} {c} (k ** pf) (k' ** pf')
@@ -93,6 +97,21 @@ divsTrans {a} {c} (k ** pf) (k' ** pf')
         (k' * k ** trans h' pf')
 
 divsAntiSym : a `Divides` b -> b `Divides` a -> a = b
+divsAntiSym {a = Z} {b = b} (k ** pf) (k' ** pf')
+  = rewrite sym pf in
+    rewrite multCommutative k 0 in
+            Refl
+divsAntiSym {a = (S m)} {b = b} (k ** pf) (k' ** pf')
+  = let h1 = cong {f = mult k'} pf
+        h2 = trans h1 pf'
+        h3 = sym $ multAssociative k' k (S m)
+        h4 = trans h3 h2
+        h5 = multNeutralIsNeutral (mult k' k) (S m) h4
+        h6 = oneTimesOneOne k' k h5 in
+        rewrite sym pf in
+        rewrite snd h6 in
+        rewrite plusCommutative m 0 in
+                Refl
 
 divsCombination : a `Divides` b ->
                   a `Divides` c ->
